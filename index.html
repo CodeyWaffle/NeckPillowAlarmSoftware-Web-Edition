@@ -13,8 +13,12 @@
         .card { background: #161b22; padding: 15px; border-radius: 12px; margin-bottom: 15px; border: 1px solid #30363d; text-align: left; }
         .row { display: flex; gap: 10px; margin-top: 10px; }
         
-        /* Inputs & Typography */
-        h3 { margin: 0 0 10px 0; font-size: 14px; color: #58a6ff; text-transform: uppercase; }
+        /* Typography */
+        h1 { color: white; font-size: 22px; margin-bottom: 25px; font-weight: 700; }
+        /* Removed uppercase transform here */
+        h3 { margin: 0 0 10px 0; font-size: 14px; color: #58a6ff; font-weight: 600; }
+        
+        /* Inputs */
         input[type="time"] { background: #0d1117; color: #fff; border: 1px solid #30363d; padding: 12px; border-radius: 8px; width: 100%; box-sizing: border-box; font-size: 18px; display: block; }
         
         /* Buttons */
@@ -34,22 +38,24 @@
 
 <div class="container">
 
+    <h1>NeckPillowAlarm Web Control</h1>
+
     <button class="btn-connect" onclick="connect()">🔗 Connect BLE</button>
 
     <div class="card">
-        <h3>⏰ Set Alarm</h3>
+        <h3>Set Alarm</h3>
         <input type="time" id="alarmPicker">
-        <button class="btn-action" onclick="sendAlarm()">Set Alarm (/alarm)</button>
+        <button class="btn-action" onclick="sendAlarm()">Set Alarm</button>
     </div>
 
     <div class="card">
-        <h3>🕒 Set RTC Time</h3>
+        <h3>Set RTC Time</h3>
         <input type="time" id="rtcPicker">
-        <button class="btn-action" onclick="sendRTC()">Set Time (/rtc)</button>
+        <button class="btn-action" onclick="sendRTC()">Set RTC</button>
     </div>
 
     <div class="card">
-        <h3>🔒 Settings</h3>
+        <h3>Settings</h3>
         <div class="row">
             <button class="btn-gray" onclick="send('/unlock')">Unlock</button>
             <button class="btn-gray" onclick="send('/lock')">Lock</button>
@@ -57,7 +63,7 @@
     </div>
 
     <div class="card">
-        <h3>🔊 Audio</h3>
+        <h3>Audio</h3>
         <div class="row">
             <button class="btn-gray" onclick="send('/sound on')">Sound Mode</button>
             <button class="btn-gray" onclick="send('/sound off')">Vibration Mode</button>
@@ -70,11 +76,9 @@
 
 <script>
     let char;
-    // Standard HM-10 / ESP32 UUIDs
     const SERVICE_UUID = "0000ffe0-0000-1000-8000-00805f9b34fb";
     const CHAR_UUID    = "0000ffe1-0000-1000-8000-00805f9b34fb";
 
-    // 1. Connect to Device
     async function connect() {
         try {
             log("Scanning...");
@@ -85,7 +89,6 @@
             const service = await server.getPrimaryService(SERVICE_UUID);
             char = await service.getCharacteristic(CHAR_UUID);
 
-            // Listen for data from Arduino
             await char.startNotifications();
             char.addEventListener('characteristicvaluechanged', (event) => {
                 const decoder = new TextDecoder();
@@ -99,7 +102,6 @@
         }
     }
 
-    // 2. Helper to send text commands
     async function send(command) {
         if (!char) {
             log("⚠️ Not Connected!");
@@ -114,25 +116,22 @@
         }
     }
 
-    // 3. Special Function for Alarm
     function sendAlarm() {
         const time = document.getElementById('alarmPicker').value;
         if (!time) return log("⚠️ Pick a time first!");
-        send("/alarm " + time); // Sends: /alarm 14:30
+        send("/alarm " + time);
     }
 
-    // 4. Special Function for RTC
     function sendRTC() {
         const time = document.getElementById('rtcPicker').value;
         if (!time) return log("⚠️ Pick a time first!");
-        send("/rtc " + time); // Sends: /rtc 14:30
+        send("/rtc " + time);
     }
 
-    // 5. Logger Function
     function log(message) {
         const term = document.getElementById('terminal');
         term.innerHTML += "<br>> " + message;
-        term.scrollTop = term.scrollHeight; // Auto-scroll to bottom
+        term.scrollTop = term.scrollHeight;
     }
 </script>
 
