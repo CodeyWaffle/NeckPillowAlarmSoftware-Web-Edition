@@ -43,13 +43,13 @@
     </div>
 
     <div class="card">
-        <h3>🕒 Set Pillow Time</h3>
+        <h3>🕒 Set RTC Time</h3>
         <input type="time" id="rtcPicker">
         <button class="btn-action" onclick="sendRTC()">Set Time (/rtc)</button>
     </div>
 
     <div class="card">
-        <h3>🔒 Settingsy</h3>
+        <h3>🔒 Settings</h3>
         <div class="row">
             <button class="btn-gray" onclick="send('/unlock')">Unlock</button>
             <button class="btn-gray" onclick="send('/lock')">Lock</button>
@@ -57,10 +57,10 @@
     </div>
 
     <div class="card">
-        <h3>🔊 Sound</h3>
+        <h3>🔊 Audio</h3>
         <div class="row">
-            <button class="btn-gray" onclick="send('/sound on')">Sound ON</button>
-            <button class="btn-gray" onclick="send('/sound off')">Sound OFF</button>
+            <button class="btn-gray" onclick="send('/sound on')">Sound Mode</button>
+            <button class="btn-gray" onclick="send('/sound off')">Vibration Mode</button>
         </div>
     </div>
 
