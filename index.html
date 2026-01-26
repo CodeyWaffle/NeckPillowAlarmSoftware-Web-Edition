@@ -123,17 +123,22 @@
         }
     }
 
-    function sendAlarm() {
-        const time = document.getElementById('alarmPicker').value;
+        function sendAlarm() {
+        const time = document.getElementById('alarmPicker').value; // Always returns 24h "HH:mm"
         if (!time) return log("⚠️ Pick a time first!");
+        
+        // This sends exactly "/alarm 13:30" (no AM/PM)
         send("/alarm " + time);
     }
 
     function sendRTC() {
         const time = document.getElementById('rtcPicker').value;
         if (!time) return log("⚠️ Pick a time first!");
+        
+        // This sends exactly "/rtc 13:30"
         send("/rtc " + time);
     }
+
 
     function log(message) {
         const term = document.getElementById('terminal');
