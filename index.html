@@ -26,7 +26,7 @@
         
         .btn-connect { background: #238636; margin-bottom: 20px; }
         .btn-action { background: #1f6feb; margin-top: 10px; }
-        .btn-red { background: #da3633; }
+        .btn-red { background: #da3633; color: white; }
         .btn-gray { background: #21262d; border: 1px solid #30363d; }
 
         /* Terminal */
@@ -68,6 +68,8 @@
             <button class="btn-gray" onclick="send('/sound off')">🔇 Vibration Mode</button>
         </div>
     </div>
+
+    <button class="btn-red" onclick="send('/stop')">🛑 STOP ALARM</button>
 
     <div id="terminal">> Waiting for connection...</div>
 
@@ -123,7 +125,7 @@
         }
     }
 
-        function sendAlarm() {
+    function sendAlarm() {
         const time = document.getElementById('alarmPicker').value; // Always returns 24h "HH:mm"
         if (!time) return log("⚠️ Pick a time first!");
         
@@ -138,7 +140,6 @@
         // This sends exactly "/rtc 13:30"
         send("/rtc " + time);
     }
-
 
     function log(message) {
         const term = document.getElementById('terminal');
