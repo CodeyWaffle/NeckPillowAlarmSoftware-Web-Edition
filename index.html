@@ -78,6 +78,12 @@
 </div>
 
 <script>
+// Register Service Worker for Offline Mode
+if ('serviceWorker' in navigator) {
+    navigator.serviceWorker.register('sw.js')
+      .then(() => console.log("Offline mode ready!"))
+      .catch((err) => console.log("Offline setup failed", err));
+}
     let rxChar, txChar;
 
     // NORDIC UART SERVICE UUIDS
