@@ -15,7 +15,6 @@
         
         /* Typography */
         h1 { color: white; font-size: 22px; margin-bottom: 25px; font-weight: 700; }
-        /* Removed uppercase transform here */
         h3 { margin: 0 0 10px 0; font-size: 14px; color: #58a6ff; font-weight: 600; }
         
         /* Inputs */
@@ -43,30 +42,30 @@
     <button class="btn-connect" onclick="connect()">🔗 Connect BLE</button>
 
     <div class="card">
-        <h3>⏰Set Alarm</h3>
+        <h3>⏰ Set Alarm</h3>
         <input type="time" id="alarmPicker">
         <button class="btn-action" onclick="sendAlarm()">Set Alarm</button>
     </div>
 
     <div class="card">
-        <h3>⏰Set RTC Time</h3>
+        <h3>🕒 Set RTC Time</h3>
         <input type="time" id="rtcPicker">
         <button class="btn-action" onclick="sendRTC()">Set RTC</button>
     </div>
 
     <div class="card">
-        <h3>⚙️Settings</h3>
+        <h3>⚙️ Settings</h3>
         <div class="row">
-            <button class="btn-gray" onclick="send('/unlock')">🔓Unlock</button>
-            <button class="btn-gray" onclick="send('/lock')">🔒Lock</button>
+            <button class="btn-gray" onclick="send('/unlock')">🔓 Unlock</button>
+            <button class="btn-gray" onclick="send('/lock')">🔒 Lock</button>
         </div>
     </div>
 
     <div class="card">
-        <h3>🔈Audio</h3>
+        <h3>🔈 Audio</h3>
         <div class="row">
-            <button class="btn-gray" onclick="send('/sound on')">🔊Sound Mode</button>
-            <button class="btn-gray" onclick="send('/sound off')">🔇Vibration Mode</button>
+            <button class="btn-gray" onclick="send('/sound on')">🔊 Sound Mode</button>
+            <button class="btn-gray" onclick="send('/sound off')">🔇 Vibration Mode</button>
         </div>
     </div>
 
@@ -75,41 +74,49 @@
 </div>
 
 <script>
-    let char;
-    const SERVICE_UUID = "0000ffe0-0000-1000-8000-00805f9b34fb";
-    const CHAR_UUID    = "0000ffe1-0000-1000-8000-00805f9b34fb";
+    let rxChar, txChar;
+
+    // NORDIC UART SERVICE UUIDS
+    const SERVICE_UUID = "6e400001-b5a3-f393-e0a9-e50e24dcca9e";
+    const RX_UUID      = "6e400002-b5a3-f393-e0a9-e50e24dcca9e"; // Send To Arduino
+    const TX_UUID      = "6e400003-b5a3-f393-e0a9-e50e24dcca9e"; // Read From Arduino
 
     async function connect() {
         try {
-            log("Scanning...");
+            log("Scanning for Nordic UART...");
             const device = await navigator.bluetooth.requestDevice({
                 filters: [{ services: [SERVICE_UUID] }]
             });
             const server = await device.gatt.connect();
             const service = await server.getPrimaryService(SERVICE_UUID);
-            char = await service.getCharacteristic(CHAR_UUID);
+            
+            // Get Both Characteristics (RX for writing, TX for listening)
+            rxChar = await service.getCharacteristic(RX_UUID);
+            txChar = await service.getCharacteristic(TX_UUID);
 
-            await char.startNotifications();
-            char.addEventListener('characteristicvaluechanged', (event) => {
+            // Listen for data from Arduino on TX
+            await txChar.startNotifications();
+            txChar.addEventListener('characteristicvaluechanged', (event) => {
                 const decoder = new TextDecoder();
                 const value = decoder.decode(event.target.value);
                 log("Received: " + value);
             });
 
-            log("✅ Connected!");
+            log("✅ Connected via Nordic!");
         } catch (error) {
             log("❌ Error: " + error);
         }
     }
 
     async function send(command) {
-        if (!char) {
+        if (!rxChar) {
             log("⚠️ Not Connected!");
             return;
         }
         try {
             const encoder = new TextEncoder();
-            await char.writeValue(encoder.encode(command));
+            // Nordic writes to the RX UUID
+            await rxChar.writeValue(encoder.encode(command));
             log("Sent: " + command);
         } catch (error) {
             log("❌ Send Failed: " + error);
