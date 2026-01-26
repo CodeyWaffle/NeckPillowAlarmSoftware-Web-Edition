@@ -1,0 +1,15 @@
+{
+  "name": "NeckPillowAlarm Control",
+  "short_name": "NPA Control",
+  "start_url": "index.html",
+  "display": "standalone",
+  "background_color": "#0d1117",
+  "theme_color": "#58a6ff",
+  "icons": [
+    {
+      "src": "https://cdn-icons-png.flaticon.com/512/2555/2555572.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}
