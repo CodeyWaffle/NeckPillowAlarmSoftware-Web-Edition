@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>NeckPillow Control</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <style>
+        body { background-color: #121212; color: white; font-family: sans-serif; text-align: center; padding: 20px; }
+        .card { background: #1E1E1E; padding: 20px; border-radius: 15px; margin-bottom: 20px; box-shadow: 0 4px 10px rgba(0,0,0,0.5); }
+        button { background: #00D4FF; border: none; padding: 15px 25px; border-radius: 10px; color: black; font-weight: bold; font-size: 16px; margin: 5px; width: 80%; }
+        .stop { background: #FF5252; }
+        #terminal { background: #000; color: #00FFD4; padding: 10px; border-radius: 10px; height: 150px; overflow-y: auto; text-align: left; font-family: monospace; font-size: 12px; border: 1px solid #333; }
+    </style>
+</head>
+<body>
+
+    <h2>💤 Pillow Alarm</h2>
+
+    <div class="card">
+        <button onclick="connectBLE()">🔗 Connect to Pillow</button>
+    </div>
+
+    <div class="card">
+        <button onclick="sendCommand('/unlock')">🔓 UNLOCK</button>
+        <button class="stop" onclick="sendCommand('/alarm_stop')">🛑 STOP ALARM</button>
+    </div>
+
+    <div class="card">
+        <div id="terminal">System: Ready. Connect via Bluefy...</div>
+    </div>
+
+    <script>
+        let device, server, service, characteristic;
+        // UUIDs from our previous steps
+        const SERVICE_UUID = "0000ffe0-0000-1000-8000-00805f9b34fb"; // Check your Arduino code
+        const CHAR_UUID = "0000ffe1-0000-1000-8000-00805f9b34fb"; 
+
+        async function connectBLE() {
+            try {
+                log("Scanning...");
+                device = await navigator.bluetooth.requestDevice({ acceptAllDevices: true, optionalServices: [SERVICE_UUID] });
+                server = await device.gatt.connect();
+                service = await server.getPrimaryService(SERVICE_UUID);
+                characteristic = await service.getCharacteristic(CHAR_UUID);
+                
+                // Start listening for notifications (The Terminal)
+                await characteristic.startNotifications();
+                characteristic.addEventListener('characteristicvaluechanged', (event) => {
+                    let decoder = new TextDecoder('utf-8');
+                    log("Pillow: " + decoder.decode(event.target.value));
+                });
+
+                log("Connected! ✅");
+            } catch (error) { log("Error: " + error); }
+        }
+
+        async function sendCommand(cmd) {
+            if (!characteristic) return log("Not connected!");
+            let encoder = new TextEncoder('utf-8');
+            await characteristic.writeValue(encoder.encode(cmd));
+            log("Sent: " + cmd);
+        }
+
+        function log(msg) {
+            const term = document.getElementById('terminal');
+            term.innerHTML += "<br>> " + msg;
+            term.scrollTop = term.scrollHeight;
+        }
+    </script>
+</body>
+</html>
