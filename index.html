@@ -43,30 +43,30 @@
     <button class="btn-connect" onclick="connect()">🔗 Connect BLE</button>
 
     <div class="card">
-        <h3>Set Alarm</h3>
+        <h3>⏰Set Alarm</h3>
         <input type="time" id="alarmPicker">
         <button class="btn-action" onclick="sendAlarm()">Set Alarm</button>
     </div>
 
     <div class="card">
-        <h3>Set RTC Time</h3>
+        <h3>⏰Set RTC Time</h3>
         <input type="time" id="rtcPicker">
         <button class="btn-action" onclick="sendRTC()">Set RTC</button>
     </div>
 
     <div class="card">
-        <h3>Settings</h3>
+        <h3>⚙️Settings</h3>
         <div class="row">
-            <button class="btn-gray" onclick="send('/unlock')">Unlock</button>
-            <button class="btn-gray" onclick="send('/lock')">Lock</button>
+            <button class="btn-gray" onclick="send('/unlock')">🔓Unlock</button>
+            <button class="btn-gray" onclick="send('/lock')">🔒Lock</button>
         </div>
     </div>
 
     <div class="card">
-        <h3>Audio</h3>
+        <h3>🔊Audio</h3>
         <div class="row">
-            <button class="btn-gray" onclick="send('/sound on')">Sound Mode</button>
-            <button class="btn-gray" onclick="send('/sound off')">Vibration Mode</button>
+            <button class="btn-gray" onclick="send('/sound on')">🔊Sound Mode</button>
+            <button class="btn-gray" onclick="send('/sound off')">🔇Vibration Mode</button>
         </div>
     </div>
 
