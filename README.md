@@ -1,7 +1,7 @@
 # NeckPillowAlarmSoftware Web Edition
 made with ❤️ by GitHub@CodeyWaffle.
 
-Make sure to open it using Bluefy.
+to iPhone users: Make sure to open it using Bluefy.
 
 https://codeywaffle.github.io/NeckPillowAlarmSoftware-Web-Edition/
 
