@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>NeckPillow Control</title>
+    <title>NeckPillowAlarm Web Control</title>
     
     <link rel="manifest" href="manifest.json">
     <meta name="apple-mobile-web-app-capable" content="yes">
@@ -44,21 +44,17 @@
 
         /* Typography */
         h1 { 
-            font-size: 24px; 
+            font-size: 22px; 
             margin-bottom: 25px; 
-            font-weight: 800; 
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            text-shadow: 0 2px 10px rgba(0,0,0,0.2);
+            font-weight: 700; 
+            text-shadow: 0 2px 4px rgba(0,0,0,0.2);
         }
 
         h3 { 
             margin: 0 0 12px 0; 
-            font-size: 13px; 
+            font-size: 14px; 
             color: #A5A6F6; /* Soft Lavender text */
-            text-transform: uppercase; 
-            font-weight: 700; 
-            letter-spacing: 0.5px;
+            font-weight: 600; 
         }
 
         /* Row Layout for Buttons */
@@ -143,24 +139,24 @@
 
 <div class="container">
 
-    <h1>NeckPillow Control</h1>
+    <h1>NeckPillowAlarm Web Control</h1>
 
-    <button class="btn-connect" onclick="connect()">🔗 Connect Bluetooth</button>
+    <button class="btn-connect" onclick="connect()">🔗 Connect BLE</button>
 
     <div class="card">
-        <h3>Set Alarm</h3>
+        <h3>⏰ Set Alarm</h3>
         <input type="time" id="alarmPicker">
         <button class="btn-action" onclick="sendAlarm()">Set Alarm</button>
     </div>
 
     <div class="card">
-        <h3>Set RTC Time</h3>
+        <h3>🕒 Set RTC Time</h3>
         <input type="time" id="rtcPicker">
-        <button class="btn-action" onclick="sendRTC()">Sync Time</button>
+        <button class="btn-action" onclick="sendRTC()">Set RTC</button>
     </div>
 
     <div class="card">
-        <h3>Settings</h3>
+        <h3>⚙️ Settings</h3>
         <div class="row">
             <button class="btn-gray" onclick="send('/unlock')">🔓 Unlock</button>
             <button class="btn-gray" onclick="send('/lock')">🔒 Lock</button>
@@ -168,16 +164,16 @@
     </div>
 
     <div class="card">
-        <h3>Audio Mode</h3>
+        <h3>🔈 Audio</h3>
         <div class="row">
-            <button class="btn-gray" onclick="send('/sound on')">🔊 Sound</button>
-            <button class="btn-gray" onclick="send('/sound off')">📳 Vibrate</button>
+            <button class="btn-gray" onclick="send('/sound on')">🔊 Sound Mode</button>
+            <button class="btn-gray" onclick="send('/sound off')">🔇 Vibration Mode</button>
         </div>
     </div>
 
-    <button class="btn-red" onclick="send('/stop')">🛑 STOP ALARM</button>
+    <button class="btn-red" onclick="send('/stop')">🛑 Stop Alarm</button>
 
-    <div id="terminal">> Ready to connect...</div>
+    <div id="terminal">> Waiting for connection...</div>
 
 </div>
 
@@ -195,7 +191,7 @@
 
     async function connect() {
         try {
-            log("Scanning...");
+            log("Scanning for Nordic UART...");
             const device = await navigator.bluetooth.requestDevice({
                 filters: [{ services: [SERVICE_UUID] }]
             });
@@ -206,28 +202,28 @@
 
             await txChar.startNotifications();
             txChar.addEventListener('characteristicvaluechanged', (e) => {
-                log("RX: " + new TextDecoder().decode(e.target.value));
+                log("Received: " + new TextDecoder().decode(e.target.value));
             });
-            log("✅ Connected!");
+            log("✅ Connected via Nordic!");
         } catch (error) { log("❌ " + error); }
     }
 
     async function send(cmd) {
-        if (!rxChar) return log("⚠️ Not Connected");
+        if (!rxChar) return log("⚠️ Not Connected!");
         try {
             await rxChar.writeValue(new TextEncoder().encode(cmd));
-            log("TX: " + cmd);
-        } catch (e) { log("❌ Send Error"); }
+            log("Sent: " + cmd);
+        } catch (e) { log("❌ Send Failed: " + e); }
     }
 
     function sendAlarm() {
         const t = document.getElementById('alarmPicker').value;
-        t ? send("/alarm " + t) : log("⚠️ Pick time first");
+        t ? send("/alarm " + t) : log("⚠️ Pick a time first!");
     }
 
     function sendRTC() {
         const t = document.getElementById('rtcPicker').value;
-        t ? send("/rtc " + t) : log("⚠️ Pick time first");
+        t ? send("/rtc " + t) : log("⚠️ Pick a time first!");
     }
 
     function log(msg) {
