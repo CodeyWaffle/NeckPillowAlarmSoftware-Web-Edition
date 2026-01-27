@@ -5,8 +5,18 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>NeckPillowAlarm Web Control</title>
     <style>
-        /* Dark Theme Styles */
-        body { background-color: #6E75A8; color: #c9d1d9; font-family: -apple-system, sans-serif; text-align: center; padding: 20px; margin: 0; }
+        /* GLOBAL RESET - Fixes width/border issues */
+        * { box-sizing: border-box; }
+
+        /* Theme Styles */
+        body { 
+            background-color: #6E75A8; /* Valid Hex Color ✅ */
+            color: #c9d1d9; 
+            font-family: -apple-system, sans-serif; 
+            text-align: center; 
+            padding: 20px; 
+            margin: 0; 
+        }
         
         /* Layout */
         .container { max-width: 400px; margin: 0 auto; }
@@ -14,26 +24,39 @@
         .row { display: flex; gap: 10px; margin-top: 10px; }
         
         /* Typography */
-        h1 { color: white; font-size: 22px; margin-bottom: 25px; font-weight: 700; }
+        h1 { color: white; font-size: 22px; margin-bottom: 25px; font-weight: 700; text-shadow: 0 2px 4px rgba(0,0,0,0.2); }
         h3 { margin: 0 0 10px 0; font-size: 14px; color: #58a6ff; font-weight: 600; }
         
         /* Inputs */
-        input[type="time"] { background: #0d1117; color: #fff; border: 1px solid #30363d; padding: 12px; border-radius: 8px; width: 100%; box-sizing: border-box; font-size: 18px; display: block; }
+        input[type="time"] { 
+            background: #0d1117; 
+            color: #fff; 
+            border: 1px solid #30363d; 
+            padding: 12px; 
+            border-radius: 8px; 
+            width: 100%; 
+            font-size: 18px; 
+            display: block; 
+            margin-bottom: 12px; /* Added spacing below input */
+            outline: none;
+        }
         
         /* Buttons */
         button { border: none; padding: 15px; border-radius: 8px; color: white; font-weight: bold; font-size: 16px; cursor: pointer; width: 100%; transition: opacity 0.2s; }
         button:active { opacity: 0.7; }
         
-        .btn-connect { background: #238636; margin-bottom: 20px; }
-        .btn-action { background: #1f6feb; margin-top: 10px; }
-        .btn-red { background: #da3633; color: white; }
+        .btn-connect { background: #238636; margin-bottom: 20px; box-shadow: 0 4px 6px rgba(0,0,0,0.2); }
+        .btn-action { background: #1f6feb; }
+        .btn-red { background: #da3633; color: white; margin-bottom: 15px; }
         .btn-gray { background: #21262d; border: 1px solid #30363d; }
 
         /* Terminal */
-        #terminal { background: #000; color: #00FFD4; padding: 15px; border-radius: 8px; height: 150px; overflow-y: auto; font-family: monospace; font-size: 12px; border: 1px solid #30363d; text-align: left; margin-top: 20px; }
+        #terminal { background: #000; color: #00FFD4; padding: 15px; border-radius: 8px; height: 150px; overflow-y: auto; font-family: monospace; font-size: 12px; border: 1px solid #30363d; text-align: left; margin-top: 10px; }
     </style>
+    
     <link rel="manifest" href="manifest.json">
-<meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <link rel="apple-touch-icon" href="Icon.png">
 </head>
 <body>
@@ -79,19 +102,20 @@
 </div>
 
 <script>
-// Register Service Worker for Offline Mode
-if ('serviceWorker' in navigator) {
-    navigator.serviceWorker.register('sw.js')
-      .then(() => console.log("Offline mode ready!"))
-      .catch((err) => console.log("Offline setup failed", err));
-}
+    // 1. Service Worker for Offline Support
+    if ('serviceWorker' in navigator) {
+        navigator.serviceWorker.register('sw.js')
+          .then(() => console.log("Offline mode ready!"))
+          .catch((err) => console.log("Offline setup failed", err));
+    }
+
+    // 2. BLE Variables
     let rxChar, txChar;
-
-    // NORDIC UART SERVICE UUIDS
     const SERVICE_UUID = "6e400001-b5a3-f393-e0a9-e50e24dcca9e";
-    const RX_UUID      = "6e400002-b5a3-f393-e0a9-e50e24dcca9e"; // Send To Arduino
-    const TX_UUID      = "6e400003-b5a3-f393-e0a9-e50e24dcca9e"; // Read From Arduino
+    const RX_UUID      = "6e400002-b5a3-f393-e0a9-e50e24dcca9e"; 
+    const TX_UUID      = "6e400003-b5a3-f393-e0a9-e50e24dcca9e"; 
 
+    // 3. Connection Logic
     async function connect() {
         try {
             log("Scanning for Nordic UART...");
@@ -101,11 +125,9 @@ if ('serviceWorker' in navigator) {
             const server = await device.gatt.connect();
             const service = await server.getPrimaryService(SERVICE_UUID);
             
-            // Get Both Characteristics (RX for writing, TX for listening)
             rxChar = await service.getCharacteristic(RX_UUID);
             txChar = await service.getCharacteristic(TX_UUID);
 
-            // Listen for data from Arduino on TX
             await txChar.startNotifications();
             txChar.addEventListener('characteristicvaluechanged', (event) => {
                 const decoder = new TextDecoder();
@@ -119,14 +141,11 @@ if ('serviceWorker' in navigator) {
         }
     }
 
+    // 4. Send Logic
     async function send(command) {
-        if (!rxChar) {
-            log("⚠️ Not Connected!");
-            return;
-        }
+        if (!rxChar) return log("⚠️ Not Connected!");
         try {
             const encoder = new TextEncoder();
-            // Nordic writes to the RX UUID
             await rxChar.writeValue(encoder.encode(command));
             log("Sent: " + command);
         } catch (error) {
@@ -135,18 +154,14 @@ if ('serviceWorker' in navigator) {
     }
 
     function sendAlarm() {
-        const time = document.getElementById('alarmPicker').value; // Always returns 24h "HH:mm"
+        const time = document.getElementById('alarmPicker').value; 
         if (!time) return log("⚠️ Pick a time first!");
-        
-        // This sends exactly "/alarm 13:30" (no AM/PM)
         send("/alarm " + time);
     }
 
     function sendRTC() {
         const time = document.getElementById('rtcPicker').value;
         if (!time) return log("⚠️ Pick a time first!");
-        
-        // This sends exactly "/rtc 13:30"
         send("/rtc " + time);
     }
 
