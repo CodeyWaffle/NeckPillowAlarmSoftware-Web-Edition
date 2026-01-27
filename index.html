@@ -197,7 +197,7 @@
                 log("Received: " + new TextDecoder().decode(e.target.value));
             });
             log("✅ Connected via Nordic!");
-        } catch (error) { log("❌ " + error); }
+        } catch (error) { log("Error #" + error); }
     }
 
     async function send(cmd) {
