@@ -2,85 +2,165 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>NeckPillowAlarm Web Control</title>
-    <style>
-        /* GLOBAL RESET - Fixes width/border issues */
-        * { box-sizing: border-box; }
-
-        /* Theme Styles */
-        body { 
-            background-color: #6E75A8; /* Valid Hex Color ✅ */
-            color: #c9d1d9; 
-            font-family: -apple-system, sans-serif; 
-            text-align: center; 
-            padding: 20px; 
-            margin: 0; 
-        }
-        
-        /* Layout */
-        .container { max-width: 400px; margin: 0 auto; }
-        .card { background: #161b22; padding: 15px; border-radius: 12px; margin-bottom: 15px; border: 1px solid #30363d; text-align: left; }
-        .row { display: flex; gap: 10px; margin-top: 10px; }
-        
-        /* Typography */
-        h1 { color: white; font-size: 22px; margin-bottom: 25px; font-weight: 700; text-shadow: 0 2px 4px rgba(0,0,0,0.2); }
-        h3 { margin: 0 0 10px 0; font-size: 14px; color: #58a6ff; font-weight: 600; }
-        
-        /* Inputs */
-        input[type="time"] { 
-            background: #0d1117; 
-            color: #fff; 
-            border: 1px solid #30363d; 
-            padding: 12px; 
-            border-radius: 8px; 
-            width: 100%; 
-            font-size: 18px; 
-            display: block; 
-            margin-bottom: 12px; /* Added spacing below input */
-            outline: none;
-        }
-        
-        /* Buttons */
-        button { border: none; padding: 15px; border-radius: 8px; color: white; font-weight: bold; font-size: 16px; cursor: pointer; width: 100%; transition: opacity 0.2s; }
-        button:active { opacity: 0.7; }
-        
-        .btn-connect { background: #238636; margin-bottom: 20px; box-shadow: 0 4px 6px rgba(0,0,0,0.2); }
-        .btn-action { background: #1f6feb; }
-        .btn-red { background: #da3633; color: white; margin-bottom: 15px; }
-        .btn-gray { background: #21262d; border: 1px solid #30363d; }
-
-        /* Terminal */
-        #terminal { background: #000; color: #00FFD4; padding: 15px; border-radius: 8px; height: 150px; overflow-y: auto; font-family: monospace; font-size: 12px; border: 1px solid #30363d; text-align: left; margin-top: 10px; }
-    </style>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>NeckPillow Control</title>
     
     <link rel="manifest" href="manifest.json">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <link rel="apple-touch-icon" href="Icon.png">
+
+    <style>
+        /* 1. GLOBAL RESET - Prevents "Off Grid" issues */
+        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+        
+        body { 
+            /* Your chosen background */
+            background-color: #6E75A8; 
+            color: #ffffff; 
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            text-align: center; 
+            padding: 20px 15px; /* Less side padding for mobile */
+            margin: 0;
+            overflow-x: hidden; /* Stops side scrolling */
+        }
+
+        /* 2. LAYOUT CONTAINER */
+        .container { 
+            max-width: 420px; 
+            margin: 0 auto; 
+            width: 100%;
+        }
+
+        /* 3. NEW CARD DESIGN */
+        .card { 
+            background: #2D2F45; /* Deep Indigo - contrasts well with Periwinkle bg */
+            padding: 20px; 
+            border-radius: 16px; 
+            margin-bottom: 15px; 
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+            text-align: left;
+        }
+
+        /* Typography */
+        h1 { 
+            font-size: 24px; 
+            margin-bottom: 25px; 
+            font-weight: 800; 
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            text-shadow: 0 2px 10px rgba(0,0,0,0.2);
+        }
+
+        h3 { 
+            margin: 0 0 12px 0; 
+            font-size: 13px; 
+            color: #A5A6F6; /* Soft Lavender text */
+            text-transform: uppercase; 
+            font-weight: 700; 
+            letter-spacing: 0.5px;
+        }
+
+        /* Row Layout for Buttons */
+        .row { display: flex; gap: 10px; width: 100%; }
+        .row button { flex: 1; } /* Makes buttons even width */
+
+        /* 4. INPUTS - Fixed Width */
+        input[type="time"] { 
+            background: #1C1E2E; 
+            color: #fff; 
+            border: 1px solid #454766; 
+            padding: 14px; 
+            border-radius: 10px; 
+            width: 100%; 
+            font-size: 20px; 
+            display: block; 
+            margin-bottom: 12px; 
+            outline: none;
+            appearance: none; /* Removes default iOS styling */
+        }
+        
+        /* 5. BUTTONS - New Colors */
+        button { 
+            border: none; 
+            padding: 16px; 
+            border-radius: 10px; 
+            color: #1a1a2e; 
+            font-weight: 700; 
+            font-size: 16px; 
+            cursor: pointer; 
+            width: 100%; 
+            transition: transform 0.1s ease;
+        }
+        button:active { transform: scale(0.98); opacity: 0.9; }
+        
+        /* Connect Button (Green/Teal) */
+        .btn-connect { 
+            background: linear-gradient(135deg, #00b4d8, #0077b6); 
+            color: white; 
+            margin-bottom: 25px; 
+            box-shadow: 0 4px 12px rgba(0,180,216, 0.4);
+        }
+
+        /* Action Buttons (Lavender) */
+        .btn-action { 
+            background: #7B61FF; 
+            color: white; 
+        }
+
+        /* Settings Buttons (Darker) */
+        .btn-gray { 
+            background: #3E415C; 
+            color: #E0E0E0; 
+            border: 1px solid #4F5270;
+        }
+
+        /* Stop Button (Red/Pink) */
+        .btn-red { 
+            background: #FF4757; 
+            color: white; 
+            margin-top: 10px;
+            box-shadow: 0 4px 12px rgba(255, 71, 87, 0.4);
+        }
+
+        /* Terminal */
+        #terminal { 
+            background: #151621; 
+            color: #00FFD4; 
+            padding: 15px; 
+            border-radius: 10px; 
+            height: 140px; 
+            overflow-y: auto; 
+            font-family: "Courier New", monospace; 
+            font-size: 11px; 
+            text-align: left; 
+            margin-top: 20px;
+            border: 1px solid #2D2F45;
+        }
+    </style>
 </head>
 <body>
 
 <div class="container">
 
-    <h1>NeckPillowAlarm Web Control</h1>
+    <h1>NeckPillow Control</h1>
 
-    <button class="btn-connect" onclick="connect()">🔗 Connect BLE</button>
+    <button class="btn-connect" onclick="connect()">🔗 Connect Bluetooth</button>
 
     <div class="card">
-        <h3>⏰ Set Alarm</h3>
+        <h3>Set Alarm</h3>
         <input type="time" id="alarmPicker">
         <button class="btn-action" onclick="sendAlarm()">Set Alarm</button>
     </div>
 
     <div class="card">
-        <h3>🕒 Set RTC Time</h3>
+        <h3>Set RTC Time</h3>
         <input type="time" id="rtcPicker">
-        <button class="btn-action" onclick="sendRTC()">Set RTC</button>
+        <button class="btn-action" onclick="sendRTC()">Sync Time</button>
     </div>
 
     <div class="card">
-        <h3>⚙️ Settings</h3>
+        <h3>Settings</h3>
         <div class="row">
             <button class="btn-gray" onclick="send('/unlock')">🔓 Unlock</button>
             <button class="btn-gray" onclick="send('/lock')">🔒 Lock</button>
@@ -88,87 +168,72 @@
     </div>
 
     <div class="card">
-        <h3>🔈 Audio</h3>
+        <h3>Audio Mode</h3>
         <div class="row">
-            <button class="btn-gray" onclick="send('/sound on')">🔊 Sound Mode</button>
-            <button class="btn-gray" onclick="send('/sound off')">🔇 Vibration Mode</button>
+            <button class="btn-gray" onclick="send('/sound on')">🔊 Sound</button>
+            <button class="btn-gray" onclick="send('/sound off')">📳 Vibrate</button>
         </div>
     </div>
 
-    <button class="btn-red" onclick="send('/stop')">🛑 Stop Alarm</button>
+    <button class="btn-red" onclick="send('/stop')">🛑 STOP ALARM</button>
 
-    <div id="terminal">> Waiting for connection...</div>
+    <div id="terminal">> Ready to connect...</div>
 
 </div>
 
 <script>
-    // 1. Service Worker for Offline Support
+    // 1. Service Worker for Offline
     if ('serviceWorker' in navigator) {
-        navigator.serviceWorker.register('sw.js')
-          .then(() => console.log("Offline mode ready!"))
-          .catch((err) => console.log("Offline setup failed", err));
+        navigator.serviceWorker.register('sw.js').catch(console.log);
     }
 
-    // 2. BLE Variables
+    // 2. BLE Setup
     let rxChar, txChar;
     const SERVICE_UUID = "6e400001-b5a3-f393-e0a9-e50e24dcca9e";
     const RX_UUID      = "6e400002-b5a3-f393-e0a9-e50e24dcca9e"; 
     const TX_UUID      = "6e400003-b5a3-f393-e0a9-e50e24dcca9e"; 
 
-    // 3. Connection Logic
     async function connect() {
         try {
-            log("Scanning for Nordic UART...");
+            log("Scanning...");
             const device = await navigator.bluetooth.requestDevice({
                 filters: [{ services: [SERVICE_UUID] }]
             });
             const server = await device.gatt.connect();
             const service = await server.getPrimaryService(SERVICE_UUID);
-            
             rxChar = await service.getCharacteristic(RX_UUID);
             txChar = await service.getCharacteristic(TX_UUID);
 
             await txChar.startNotifications();
-            txChar.addEventListener('characteristicvaluechanged', (event) => {
-                const decoder = new TextDecoder();
-                const value = decoder.decode(event.target.value);
-                log("Received: " + value);
+            txChar.addEventListener('characteristicvaluechanged', (e) => {
+                log("RX: " + new TextDecoder().decode(e.target.value));
             });
-
-            log("✅ Connected via Nordic!");
-        } catch (error) {
-            log("❌ Error: " + error);
-        }
+            log("✅ Connected!");
+        } catch (error) { log("❌ " + error); }
     }
 
-    // 4. Send Logic
-    async function send(command) {
-        if (!rxChar) return log("⚠️ Not Connected!");
+    async function send(cmd) {
+        if (!rxChar) return log("⚠️ Not Connected");
         try {
-            const encoder = new TextEncoder();
-            await rxChar.writeValue(encoder.encode(command));
-            log("Sent: " + command);
-        } catch (error) {
-            log("❌ Send Failed: " + error);
-        }
+            await rxChar.writeValue(new TextEncoder().encode(cmd));
+            log("TX: " + cmd);
+        } catch (e) { log("❌ Send Error"); }
     }
 
     function sendAlarm() {
-        const time = document.getElementById('alarmPicker').value; 
-        if (!time) return log("⚠️ Pick a time first!");
-        send("/alarm " + time);
+        const t = document.getElementById('alarmPicker').value;
+        t ? send("/alarm " + t) : log("⚠️ Pick time first");
     }
 
     function sendRTC() {
-        const time = document.getElementById('rtcPicker').value;
-        if (!time) return log("⚠️ Pick a time first!");
-        send("/rtc " + time);
+        const t = document.getElementById('rtcPicker').value;
+        t ? send("/rtc " + t) : log("⚠️ Pick time first");
     }
 
-    function log(message) {
-        const term = document.getElementById('terminal');
-        term.innerHTML += "<br>> " + message;
-        term.scrollTop = term.scrollHeight;
+    function log(msg) {
+        const t = document.getElementById('terminal');
+        t.innerHTML += "<br>> " + msg;
+        t.scrollTop = t.scrollHeight;
     }
 </script>
 
