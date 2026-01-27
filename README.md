@@ -6,6 +6,7 @@ Make sure to open it using Bluefy.
 https://codeywaffle.github.io/NeckPillowAlarmSoftware-Web-Edition/
 
     -Update Logs-
+    v1.02-a: Fixed time picker off-grid issue
     v1.02: Allow offline use
     v1.01: Added Stop Alarm button
     v1.0: Basic functions
