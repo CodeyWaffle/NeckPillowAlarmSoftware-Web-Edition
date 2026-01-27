@@ -170,6 +170,12 @@
 </div>
 
 <script>
+window.onload = function() {
+    if (!navigator.bluetooth) {
+        log("⚠️ This browser doesn't support Bluetooth.");
+        log("iPhone users: Please use the **Bluefy** app.");
+    }
+};
     // 1. Service Worker for Offline
     if ('serviceWorker' in navigator) {
         navigator.serviceWorker.register('sw.js').catch(console.log);
